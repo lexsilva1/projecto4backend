@@ -332,6 +332,14 @@ public boolean findOtherUserByUsername(String username) {
             userDao.persist(userEntity1);
         }
     }
+    public List<User> getDeletedUsers() {
+        List<UserEntity> users = userDao.getDeletedUsers();
+        List<User> usersDto = new ArrayList<>();
+        for (UserEntity user : users) {
+            usersDto.add(convertToDto(user));
+        }
+        return usersDto;
+    }
 }
 
 

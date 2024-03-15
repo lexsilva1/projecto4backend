@@ -39,6 +39,18 @@ public class UserService {
             return Response.status(200).entity(users).build();
         }
     }
+    @GET
+    @Path("/allDeleted")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDeletedUsers(@HeaderParam("token") String token) {
+        boolean user = userBean.tokenExists(token);
+        if (!user) {
+            return Response.status(403).entity("User with this token is not found").build();
+        }else {
+            List<User> users = userBean.getDeletedUsers();
+            return Response.status(200).entity(users).build();
+        }
+    }
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
