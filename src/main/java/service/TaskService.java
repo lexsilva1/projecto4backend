@@ -47,6 +47,32 @@ public class TaskService {
         }
     }
     @GET
+    @Path("/allActive")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllActiveTasks(@HeaderParam("token") String token) {
+        boolean authorized = userBean.isUserAuthorized(token);
+        if (!authorized) {
+            return Response.status(401).entity("Unauthorized").build();
+        } else {
+            ArrayList<Task> taskList = taskBean.getAllActiveTasks();
+            taskList.sort(Comparator.comparing(Task::getPriority, Comparator.reverseOrder()).thenComparing(Comparator.comparing(Task::getStartDate).thenComparing(Task::getEndDate)));
+            return Response.status(200).entity(taskList).build();
+        }
+    }
+    @GET
+    @Path("/allDeleted")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllDeletedTasks(@HeaderParam("token") String token) {
+        boolean authorized = userBean.isUserAuthorized(token);
+        if (!authorized) {
+            return Response.status(401).entity("Unauthorized").build();
+        } else {
+            ArrayList<Task> taskList = taskBean.getDeletedTasks();
+            taskList.sort(Comparator.comparing(Task::getPriority, Comparator.reverseOrder()).thenComparing(Comparator.comparing(Task::getStartDate).thenComparing(Task::getEndDate)));
+            return Response.status(200).entity(taskList).build();
+        }
+    }
+    @GET
     @Path("/byUser/{username}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTasksByUser(@HeaderParam("token") String token,@PathParam("username") String username) {
@@ -146,6 +172,7 @@ public class TaskService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCategory(Category category, @HeaderParam("token") String token) {
+        System.out.println("category: " + category.getName());
         boolean authorized = userBean.isUserOwner(token);
            User user = userBean.getUser(token);
         if (!authorized) {

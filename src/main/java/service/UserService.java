@@ -51,6 +51,18 @@ public class UserService {
             return Response.status(200).entity(users).build();
         }
     }
+    @GET
+    @Path("/allActive")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getActiveUsers(@HeaderParam("token") String token) {
+        boolean user = userBean.tokenExists(token);
+        if (!user) {
+            return Response.status(403).entity("User with this token is not found").build();
+        }else {
+            List<User> users = userBean.getActiveUsers();
+            return Response.status(200).entity(users).build();
+        }
+    }
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)

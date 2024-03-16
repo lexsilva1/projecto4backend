@@ -340,6 +340,14 @@ public boolean findOtherUserByUsername(String username) {
         }
         return usersDto;
     }
+    public ArrayList<User> getActiveUsers() {
+        List<UserEntity> users = userDao.getActiveUsers();
+        ArrayList<User> usersDto = new ArrayList<>();
+        for (UserEntity user : users) {
+            usersDto.add(convertToDto(user));
+        }
+        return usersDto;
+    }
 }
 
 

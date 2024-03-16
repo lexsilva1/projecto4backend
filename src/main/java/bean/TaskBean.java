@@ -144,6 +144,26 @@ public class TaskBean {
     public Task findTaskById(String id) {
         return convertToDto(taskDao.findTaskById(id));
     }
+    public ArrayList<Task> getAllActiveTasks() {
+        List<TaskEntity> taskEntities = taskDao.findAll();
+        ArrayList<Task> tasks = new ArrayList<>();
+        for (TaskEntity taskEntity : taskEntities) {
+            if (taskEntity.isActive()) {
+                tasks.add(convertToDto(taskEntity));
+            }
+        }
+        return tasks;
+    }
+    public ArrayList<Task> getDeletedTasks() {
+        List<TaskEntity> taskEntities = taskDao.findAll();
+        ArrayList<Task> tasks = new ArrayList<>();
+        for (TaskEntity taskEntity : taskEntities) {
+            if (!taskEntity.isActive()) {
+                tasks.add(convertToDto(taskEntity));
+            }
+        }
+        return tasks;
+    }
     public TaskCreator findUserById(String id) {
     TaskEntity taskEntity = taskDao.findTaskById(id);
         TaskCreator taskCreator = new TaskCreator();

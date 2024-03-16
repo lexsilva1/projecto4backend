@@ -43,4 +43,7 @@ public class UserDao extends AbstractDao<UserEntity>{
     public void updateUser(UserEntity userEntity) {
         em.merge(userEntity);
     }
+    public List<UserEntity> getActiveUsers() {
+        return em.createNamedQuery("User.findActiveUsers").getResultList();
+    }
 }
