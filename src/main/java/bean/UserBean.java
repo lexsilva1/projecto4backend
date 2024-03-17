@@ -344,7 +344,9 @@ public boolean findOtherUserByUsername(String username) {
         List<UserEntity> users = userDao.getActiveUsers();
         ArrayList<User> usersDto = new ArrayList<>();
         for (UserEntity user : users) {
-            usersDto.add(convertToDto(user));
+            if (!user.getUsername().equals("admin") && !user.getUsername().equals("deleted")) {
+                usersDto.add(convertToDto(user));
+            }
         }
         return usersDto;
     }
