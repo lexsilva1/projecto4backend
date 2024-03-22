@@ -77,6 +77,7 @@ public class UserBean {
         }
         return false;
     }
+
     public boolean ownerupdateUser(String token, User user) {
         UserEntity a = userDao.findUserByUsername(user.getUsername());
         UserEntity responsible = userDao.findUserByToken(token);
@@ -108,6 +109,7 @@ public class UserBean {
         }
         return false;
     }
+
     public boolean updatePassword(String token, PasswordDto password) {
         UserEntity a = userDao.findUserByToken(token);
         if (a != null) {
@@ -119,6 +121,7 @@ public class UserBean {
         }
         return false;
     }
+
     public boolean isPasswordValid(PasswordDto password) {
         if (password.getPassword().isBlank() || password.getNewPassword().isBlank()) {
             return false;
@@ -128,10 +131,10 @@ public class UserBean {
         return true;
     }
 
-public boolean findOtherUserByUsername(String username) {
+    public boolean findOtherUserByUsername(String username) {
         UserEntity a = userDao.findUserByUsername(username);
-      return a != null;
-}
+        return a != null;
+    }
 
     public String login(String username, String password) {
         UserEntity user = userDao.findUserByUsername(username);
@@ -234,7 +237,7 @@ public boolean findOtherUserByUsername(String username) {
     }
 
     public boolean deleteUser(String token, String username) {
-        if(username.equals("admin") || username.equals("deleted")){
+        if (username.equals("admin") || username.equals("deleted")) {
             return false;
         }
 
@@ -247,10 +250,10 @@ public boolean findOtherUserByUsername(String username) {
             return true;
         }
         if (responsible.getRole().equals("Owner") && !user.isActive()) {
-            if(doesUserHaveTasks(username)){
+            if (doesUserHaveTasks(username)) {
                 List<TaskEntity> tasks = taskDao.getTasksByUser(user);
                 UserEntity deletedUser = userDao.findUserByUsername("deleted");
-                for(TaskEntity task: tasks){
+                for (TaskEntity task : tasks) {
                     task.setUser(deletedUser);
                     taskDao.updateTask(task);
                 }
@@ -305,8 +308,9 @@ public boolean findOtherUserByUsername(String username) {
             return false;
         }
     }
+
     public void createDefaultUsers() {
-        if(userDao.findUserByUsername("admin") == null) {
+        if (userDao.findUserByUsername("admin") == null) {
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername("admin");
             userEntity.setName("admin");
@@ -318,7 +322,7 @@ public boolean findOtherUserByUsername(String username) {
             userEntity.setActive(true);
             userDao.persist(userEntity);
         }
-        if(userDao.findUserByUsername("deleted") == null) {
+        if (userDao.findUserByUsername("deleted") == null) {
 
             UserEntity userEntity1 = new UserEntity();
             userEntity1.setUsername("deleted");
@@ -332,6 +336,7 @@ public boolean findOtherUserByUsername(String username) {
             userDao.persist(userEntity1);
         }
     }
+
     public List<User> getDeletedUsers() {
         List<UserEntity> users = userDao.getDeletedUsers();
         List<User> usersDto = new ArrayList<>();
@@ -340,6 +345,7 @@ public boolean findOtherUserByUsername(String username) {
         }
         return usersDto;
     }
+
     public ArrayList<User> getActiveUsers() {
         List<UserEntity> users = userDao.getActiveUsers();
         ArrayList<User> usersDto = new ArrayList<>();
@@ -350,8 +356,66 @@ public boolean findOtherUserByUsername(String username) {
         }
         return usersDto;
     }
-}
 
+    public ArrayList<User> getFilteredUsers(String role, Boolean active, String username) {
+        ArrayList<User> usersDto = new ArrayList<>();
+        if (active && role == null && username == null) {
+            return getActiveUsers();
+        } else if (!active && role == null && username == null) {
+            List<UserEntity> users = userDao.getDeletedUsers();
+            for (UserEntity user : users) {
+                usersDto.add(convertToDto(user));
+            }
+            return usersDto;
+        } else if (active && role != null && username == null) {
+            List<UserEntity> users = userDao.getUsersByRole(role,active);
+            for (UserEntity user : users) {
+                usersDto.add(convertToDto(user));
+            }
+            return usersDto;
+        } else if (active && role == null && username != null) {
+            UserEntity user = userDao.findUserByUsername(username);
+            if (user != null) {
+                usersDto.add(convertToDto(user));
+            }
+            return usersDto;
+        } else if (active && role != null && username != null) {
+            UserEntity user = userDao.findUserByUsername(username);
+            if (user != null && user.getRole().equals(role)) {
+                usersDto.add(convertToDto(user));
+            }
+            return usersDto;
+        } else if (!active && role != null && username == null) {
+            List<UserEntity> users = userDao.getDeletedUsers();
+            for (UserEntity user : users) {
+                if (user.getRole().equals(role)) {
+                    usersDto.add(convertToDto(user));
+                }
+            }
+            return usersDto;
+        } else if (!active && role == null && username != null) {
+            UserEntity user = userDao.findUserByUsername(username);
+            if (user != null) {
+                usersDto.add(convertToDto(user));
+            }
+            return usersDto;
+        } else if (!active && role != null && username != null) {
+            UserEntity user = userDao.findUserByUsername(username);
+            if (user != null && user.getRole().equals(role)) {
+                usersDto.add(convertToDto(user));
+            }
+            return usersDto;
+        } else if (!active && role == null && username == null) {
+            List<UserEntity> users = userDao.getDeletedUsers();
+            for (UserEntity user : users) {
+                usersDto.add(convertToDto(user));
+            }
+            return usersDto;
+        }
+        return usersDto;
+
+    }
+}
 
 
 

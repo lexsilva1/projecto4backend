@@ -241,5 +241,21 @@ public class UserService {
             }
         }
     }
+    @GET
+    @Path("")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFilteredUsers(@HeaderParam("token") String token, @QueryParam("role") String role, @QueryParam("active") Boolean active, @QueryParam("username") String username) {
+        boolean authorized = userBean.isUserAuthorized(token);
+        if (!authorized) {
+            return Response.status(403).entity("Forbidden").build();
+        }else {
+            if (active ==  null){
+                active = true;
+            }
+            List<User> users = userBean.getFilteredUsers(role, active, username);
+            return Response.status(200).entity(users).build();
+        }
+    }
+
 }
 

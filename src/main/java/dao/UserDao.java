@@ -34,6 +34,11 @@ public class UserDao extends AbstractDao<UserEntity>{
             return null;
         }
     }
+    public List<UserEntity> getUsersByRole(String role, Boolean active) {
+        return em.createNamedQuery("User.findUserByRole").setParameter("role", role).setParameter("active", active).getResultList();
+    }
+
+
     public List<UserEntity> getDeletedUsers() {
         return em.createNamedQuery("User.findDeletedUsers").getResultList();
     }

@@ -170,7 +170,6 @@ public class TaskService {
     @POST
     @Path("/createCategory")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response createCategory(Category category, @HeaderParam("token") String token) {
         System.out.println("category: " + category.getName());
         boolean authorized = userBean.isUserOwner(token);
@@ -236,6 +235,10 @@ public class TaskService {
     public Response updateTask(Task task, @HeaderParam("token") String token) {
         boolean authorized = userBean.isUserAuthorized(token);
         User user = userBean.getUser(token);
+        if(task.getEndDate()==null){
+            task.setEndDate(LocalDate.of(2199,31,12));
+        }
+
         TaskEntity taskEntity = taskBean.convertToEntity(task);
         if (!authorized) {
             return Response.status(401).entity("Unauthorized").build();
@@ -349,6 +352,24 @@ public class TaskService {
         } else {
             TaskCreator creator = taskBean.findUserById(id);
             return Response.status(200).entity(creator).build();
+        }
+    }
+    @GET
+    @Path("")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFilteredTasks(@HeaderParam("token") String token, @QueryParam("active") Boolean active, @QueryParam("category") String category, @QueryParam ("username") String username){
+        boolean authorized = userBean.isUserAuthorized(token);
+        if (!authorized) {
+            return Response.status(401).entity("Unauthorized").build();
+        }else if (active == null) {
+            active = true;
+            ArrayList<Task> taskList = taskBean.getFilteredTasks( active, category, username);
+            return Response.status(200).entity(taskList).build();
+
+        } else {
+            ArrayList<Task> taskList = taskBean.getFilteredTasks( active, category, username);
+            //taskList.sort(Comparator.comparing(Task::getPriority, Comparator.reverseOrder()).thenComparing(Comparator.comparing(Task::getStartDate).thenComparing(Task::getEndDate)));
+            return Response.status(200).entity(taskList).build();
         }
     }
 }

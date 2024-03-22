@@ -134,13 +134,78 @@ public class TaskBean {
         }
         return true;
     }
-    public List<Task> convertToDtoList(List<TaskEntity> taskEntities) {
-        List<Task> tasks = new ArrayList<>();
-        for (TaskEntity taskEntity : taskEntities) {
-            tasks.add(convertToDto(taskEntity));
+  public ArrayList<Task> getFilteredTasks( Boolean active,String category,String username) {
+      System.out.println("username: " + username);
+      ArrayList<Task> tasks = new ArrayList<>();
+      List<TaskEntity> activeTasks = taskDao.findAllActiveTasks();
+      List<TaskEntity> inactiveTasks = taskDao.findDeletedTasks();
+
+        if(active && category == null && username==null) {
+            for (TaskEntity taskEntity : activeTasks) {
+                tasks.add(convertToDto(taskEntity));
+            }
+            return tasks;
+        } else if(!active && category == null && username == null) {
+            for (TaskEntity taskEntity : inactiveTasks) {
+                tasks.add(convertToDto(taskEntity));
+            }
+            return tasks;
+
+
+        } else if(active && category != null && username == null) {
+            List<TaskEntity> allActiveTasks = taskDao.findTasksByCategory2(taskDao.findCategoryByName(category), active);
+            for (TaskEntity taskEntity : allActiveTasks) {
+                tasks.add(convertToDto(taskEntity));
+            }
+            return tasks;
+        } else if(!active && category != null && username == null) {
+            List<TaskEntity> allTasks = taskDao.findTasksByCategory2(taskDao.findCategoryByName(category), active);
+            for (TaskEntity taskEntity : allTasks) {
+                tasks.add(convertToDto(taskEntity));
+            }
+            return tasks;
+        } else if(active && category == null && username != null )  {
+            List<TaskEntity> allActiveTasks = taskDao.findTasksByUser2(userDao.findUserByUsername(username),active);
+            for (TaskEntity taskEntity : allActiveTasks) {
+                tasks.add(convertToDto(taskEntity));
+            }
+            return tasks;
+        } else if(!active && category == null && username!=null){
+            List<TaskEntity> allTasks = taskDao.findTasksByUser2(userDao.findUserByUsername(username),active);
+            for (TaskEntity taskEntity : allTasks) {
+                tasks.add(convertToDto(taskEntity));
+            }
+            return tasks;
+        } else if(active && category != null && username!=null) {
+            List<TaskEntity> allActiveTasks = taskDao.findTasksByCategory2(taskDao.findCategoryByName(category), active);
+            List<TaskEntity> allActiveTasksByUser = new ArrayList<>();
+            for(TaskEntity task: allActiveTasks) {
+                if(task.getUser().getUsername().equals(username)) {
+                    allActiveTasksByUser.add(task);
+                }
+            }
+            for (TaskEntity taskEntity : allActiveTasksByUser) {
+                tasks.add(convertToDto(taskEntity));
+            }
+            return tasks;
+        } else if(!active && category != null && username != null) {
+            List<TaskEntity> allTasks = taskDao.findTasksByCategory2(taskDao.findCategoryByName(category), active);
+            List<TaskEntity> allTasksByUser = new ArrayList<>();
+            for(TaskEntity task: allTasks) {
+                if(task.getUser().getUsername().equals(username)) {
+                    allTasksByUser.add(task);
+                }
+            }
+            for (TaskEntity taskEntity : allTasksByUser) {
+                tasks.add(convertToDto(taskEntity));
+            }
+            return tasks;
+        } else {
+            return tasks;
         }
-        return tasks;
-    }
+
+  }
+
     public Task findTaskById(String id) {
         return convertToDto(taskDao.findTaskById(id));
     }
