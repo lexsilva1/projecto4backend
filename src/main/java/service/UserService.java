@@ -248,12 +248,17 @@ public class UserService {
         boolean authorized = userBean.isUserAuthorized(token);
         if (!authorized) {
             return Response.status(403).entity("Forbidden").build();
-        }else {
+        }
+        if(username ==null){
             if (active ==  null){
                 active = true;
             }
             List<User> users = userBean.getFilteredUsers(role, active, username);
             return Response.status(200).entity(users).build();
+        }else{
+            User user = userBean.getUserByUsername(username);
+            UserDto userDto = userBean.convertUsertoUserDto(user);
+            return Response.status(200).entity(userDto).build();
         }
     }
 
