@@ -23,15 +23,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import jakarta.ws.rs.*;
-@Path("/task")
+@Path("/tasks")
 public class TaskService {
     @Inject
     TaskBean taskBean;
     @Inject
     UserBean userBean;
 
-    @GET
-    @Path("/all")
+    /*@GET
+    @Path("")
     @Produces(MediaType.APPLICATION_JSON)
     public Response isUserValid(@HeaderParam("token") String token) {
         boolean authorized = userBean.isUserAuthorized(token);
@@ -45,7 +45,7 @@ public class TaskService {
             taskList.sort(Comparator.comparing(Task::getPriority, Comparator.reverseOrder()).thenComparing(Comparator.comparing(Task::getStartDate).thenComparing(Task::getEndDate)));
             return Response.status(200).entity(taskList).build();
         }
-    }
+    }*/
 
     @GET
     @Path("/allActive")
@@ -117,7 +117,7 @@ public class TaskService {
     }
 
     @DELETE
-    @Path("/deleteAll/{username}")
+    @Path("/{username}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response removeAllTasks(@HeaderParam("token") String token, @PathParam("username") String username) {
         boolean authorized = userBean.isUserOwner(token);
@@ -135,7 +135,7 @@ public class TaskService {
     }
 
     @POST
-    @Path("/add")
+    @Path("")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addTask(Task task, @HeaderParam("token") String token) {
@@ -160,7 +160,7 @@ public class TaskService {
     }
 
     @PATCH
-    @Path("/restore/{id}")
+    @Path("/active/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response restoreTask(@HeaderParam("token") String token, @PathParam("id") String id) {
         boolean authorized = userBean.isUserAuthorized(token);
@@ -177,7 +177,7 @@ public class TaskService {
     }
 
     @POST
-    @Path("/createCategory")
+    @Path("/Categories")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createCategory(Category category, @HeaderParam("token") String token) {
         System.out.println("category: " + category.getName());
@@ -196,7 +196,7 @@ public class TaskService {
     }
 
     @PUT
-    @Path("/updateCategory")
+    @Path("/Categories")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCategory(Category category, @HeaderParam("token") String token) {
@@ -219,7 +219,7 @@ public class TaskService {
     }
 
     @DELETE
-    @Path("/deleteCategory/{name}")
+    @Path("/Categories/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response removeCategory(@HeaderParam("token") String token, @PathParam("name") String name) {
         boolean authorized = userBean.isUserOwner(token);
@@ -240,7 +240,7 @@ public class TaskService {
     }
 
     @PUT
-    @Path("/update")
+    @Path("")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateTask(Task task, @HeaderParam("token") String token) {
@@ -276,7 +276,7 @@ public class TaskService {
     }
 
     @PATCH
-    @Path("/changeStatus/{id}")
+    @Path("/Status/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response changeStatus(@HeaderParam("token") String token, @PathParam("id") String id, String status) {
         boolean authorized = userBean.isUserAuthorized(token);
@@ -294,7 +294,8 @@ public class TaskService {
         }
     }
 
-    @DELETE
+
+    /*@DELETE
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response removeTask(@HeaderParam("token") String token, @PathParam("id") String id) {
@@ -309,10 +310,10 @@ public class TaskService {
                 return Response.status(200).entity("Task removed").build();
             }
         }
-    }
+    }*/
 
-    @PATCH
-    @Path("/block/{id}")
+    @DELETE
+    @Path("/active/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response blockTask(@HeaderParam("token") String token, @PathParam("id") String id) {
         boolean authorized = userBean.isUserAuthorized(token);
@@ -331,7 +332,7 @@ public class TaskService {
     }
 
     @GET
-    @Path("/allCategories")
+    @Path("/Categories")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllCategories(@HeaderParam("token") String token) {
         boolean authorized = userBean.isUserAuthorized(token);

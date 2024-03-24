@@ -164,6 +164,7 @@ public class UserBean {
         return false;
     }
 
+
     public boolean userNameExists(String username) {
         UserEntity a = userDao.findUserByUsername(username);
         if (a != null) {
@@ -337,9 +338,9 @@ public class UserBean {
         }
     }
 
-    public List<User> getDeletedUsers() {
+    public ArrayList<User> getDeletedUsers() {
         List<UserEntity> users = userDao.getDeletedUsers();
-        List<User> usersDto = new ArrayList<>();
+        ArrayList<User> usersDto = new ArrayList<>();
         for (UserEntity user : users) {
             usersDto.add(convertToDto(user));
         }
@@ -356,36 +357,33 @@ public class UserBean {
         }
         return usersDto;
     }
-
-    public ArrayList<User> getFilteredUsers(String role, Boolean active, String username) {
+    public ArrayList<User> getAllUsers() {
+        List<UserEntity> users = userDao.findAllUsers();
         ArrayList<User> usersDto = new ArrayList<>();
-        if (active && role == null && username == null) {
-            return getActiveUsers();
-        } else if (!active && role == null && username == null) {
-            List<UserEntity> users = userDao.getDeletedUsers();
-            for (UserEntity user : users) {
+        for (UserEntity user : users) {
                 usersDto.add(convertToDto(user));
-            }
-            return usersDto;
-        } else if (active && role != null && username == null) {
+        }
+        return usersDto;
+    }
+
+    public ArrayList<User> getFilteredUsers(String role, Boolean active) {
+        ArrayList<User> usersDto = new ArrayList<>();
+        if(active==null && role==null){
+            return getAllUsers();
+        }
+        if (active && role == null ) {
+            return getActiveUsers();
+        } else if (!active && role == null ) {
+            return getDeletedUsers();
+
+        } else if (active && role != null ) {
             List<UserEntity> users = userDao.getUsersByRole(role,active);
             for (UserEntity user : users) {
                 usersDto.add(convertToDto(user));
             }
             return usersDto;
-        } else if (active && role == null && username != null) {
-            UserEntity user = userDao.findUserByUsername(username);
-            if (user != null) {
-                usersDto.add(convertToDto(user));
-            }
-            return usersDto;
-        } else if (active && role != null && username != null) {
-            UserEntity user = userDao.findUserByUsername(username);
-            if (user != null && user.getRole().equals(role)) {
-                usersDto.add(convertToDto(user));
-            }
-            return usersDto;
-        } else if (!active && role != null && username == null) {
+
+        } else if (!active && role != null) {
             List<UserEntity> users = userDao.getDeletedUsers();
             for (UserEntity user : users) {
                 if (user.getRole().equals(role)) {
@@ -393,19 +391,7 @@ public class UserBean {
                 }
             }
             return usersDto;
-        } else if (!active && role == null && username != null) {
-            UserEntity user = userDao.findUserByUsername(username);
-            if (user != null) {
-                usersDto.add(convertToDto(user));
-            }
-            return usersDto;
-        } else if (!active && role != null && username != null) {
-            UserEntity user = userDao.findUserByUsername(username);
-            if (user != null && user.getRole().equals(role)) {
-                usersDto.add(convertToDto(user));
-            }
-            return usersDto;
-        } else if (!active && role == null && username == null) {
+        } else if (!active && role == null ) {
             List<UserEntity> users = userDao.getDeletedUsers();
             for (UserEntity user : users) {
                 usersDto.add(convertToDto(user));

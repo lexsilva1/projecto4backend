@@ -51,4 +51,8 @@ public class UserDao extends AbstractDao<UserEntity>{
     public List<UserEntity> getActiveUsers() {
         return em.createNamedQuery("User.findActiveUsers").getResultList();
     }
+
+    public List<UserEntity> findAllUsers() {
+        return em.createNamedQuery("User.findAllUsers").getResultList();
+    }
 }
